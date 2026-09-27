@@ -39,9 +39,10 @@ pipeline {
         }
 
         stage('Verify') {
-            steps {
-                sh 'curl -fsS http://localhost:8081/devops-java-webapp/health'
-            }
+             steps {
+        retry(5) {
+            sh 'sleep 5'
+            sh 'curl -fsS http://localhost:8081/devops-java-webapp/health'
         }
     }
 }
