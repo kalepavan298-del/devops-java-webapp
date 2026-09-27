@@ -38,11 +38,13 @@ pipeline {
             }
         }
 
-        stage('Verify') {
-             steps {
-        retry(5) {
-            sh 'sleep 5'
-            sh 'curl -fsS http://localhost:8081/devops-java-webapp/health'
+         stage('Verify') {
+            steps {
+                retry(5) {
+                    sh 'sleep 5'
+                    sh 'curl -fsS http://localhost:8081/devops-java-webapp/health'
+                }
+            }
         }
     }
 }
