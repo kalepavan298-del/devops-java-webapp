@@ -31,18 +31,22 @@ pipeline {
                 archiveArtifacts artifacts: 'target/*.war', fingerprint: true
             }
         }
-
-        stage('Deploy') {
+         stage('Deploy and Verify') {
             steps {
-                sh 'sudo /usr/local/bin/deploy-devops-app.sh "$WORKSPACE/target/devops-java-webapp.war"'
-            }
-        }
+                script {
+                    try {
+                        sh 'sudo /usr/local/bin/deploy-devops-app.sh "$WORKSPACE/target/devops-java-webapp.war"'
 
-         stage('Verify') {
-            steps {
-                retry(5) {
-                    sh 'sleep 5'
-                    sh 'curl -fsS http://localhost:8081/devops-java-webapp/health'
+                        retry(5) {
+                            sh 'sleep 5'
+                            sh 'curl -fsS http://localhost:8081/devops-java-webapp/health'
+                        }
+
+                    } catch (err) {
+                        echo 'Deployment verification failed. Starting rollback...'
+                        sh 'sudo /usr/local/bin/rollback-devops-app.sh'
+                        throw err
+                    }
                 }
             }
         }
