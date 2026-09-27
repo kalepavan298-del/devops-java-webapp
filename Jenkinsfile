@@ -31,5 +31,17 @@ pipeline {
                 archiveArtifacts artifacts: 'target/*.war', fingerprint: true
             }
         }
+
+        stage('Deploy') {
+            steps {
+                sh 'sudo /usr/local/bin/deploy-devops-app.sh "$WORKSPACE/target/devops-java-webapp.war"'
+            }
+        }
+
+        stage('Verify') {
+            steps {
+                sh 'curl -fsS http://localhost:8081/devops-java-webapp/health'
+            }
+        }
     }
 }
